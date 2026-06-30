@@ -42,7 +42,7 @@ const RenderTeam = ({ team, isSelected, onClick }) => (
     className={`team ${isSelected ? "selected" : ""} team-${mapaFlags[team]}`}
     onClick={onClick}
   >
-    <img src={`/${mapaFlags[team]}.png`} alt={team} />
+    <img src={`${import.meta.env.BASE_URL}${mapaFlags[team]}.png`} alt={team} />
     {team}
   </div>
 );
@@ -121,6 +121,50 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    const salvo = localStorage.getItem("chaveamentoCopa");
+    if (salvo) setVencedores(JSON.parse(salvo));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chaveamentoCopa", JSON.stringify(vencedores));
+  }, [vencedores]);
+
+  const reiniciar = () => {
+    setVencedores({});
+    localStorage.removeItem("chaveamentoCopa");
+  };
+
+  const preencherAleatorio = () => {
+  let novosVencedores = {};
+  const escolher = (t1, t2) => (Math.random() > 0.5 ? t1 : t2);
+
+  // 1. Preencher 16-avos (Rodada inicial)
+  ladoEsquerdo.forEach((match, i) => novosVencedores[`left-16avos-${i}`] = escolher(match[0], match[1]));
+  ladoDireito.forEach((match, i) => novosVencedores[`right-16avos-${i}`] = escolher(match[0], match[1]));
+
+  // 2. Preencher Oitavas (Baseado nos 16-avos)
+  for (let i = 0; i < 4; i++) {
+    novosVencedores[`left-oitavas-${i}`] = escolher(novosVencedores[`left-16avos-${i*2}`], novosVencedores[`left-16avos-${i*2+1}`]);
+    novosVencedores[`right-oitavas-${i}`] = escolher(novosVencedores[`right-16avos-${i*2}`], novosVencedores[`right-16avos-${i*2+1}`]);
+  }
+
+  // 3. Preencher Quartas (Baseado nas Oitavas)
+  for (let i = 0; i < 2; i++) {
+    novosVencedores[`left-quartas-${i}`] = escolher(novosVencedores[`left-oitavas-${i*2}`], novosVencedores[`left-oitavas-${i*2+1}`]);
+    novosVencedores[`right-quartas-${i}`] = escolher(novosVencedores[`right-oitavas-${i*2}`], novosVencedores[`right-oitavas-${i*2+1}`]);
+  }
+
+  // 4. Preencher Semi (Baseado nas Quartas)
+  novosVencedores[`left-semi-0`] = escolher(novosVencedores[`left-quartas-0`], novosVencedores[`left-quartas-1`]);
+  novosVencedores[`right-semi-0`] = escolher(novosVencedores[`right-quartas-0`], novosVencedores[`right-quartas-1`]);
+
+  // 5. Preencher Final
+  novosVencedores[`final-0`] = escolher(novosVencedores[`left-semi-0`], novosVencedores[`right-semi-0`]);
+
+  setVencedores(novosVencedores);
+};
+
   return (
     <div
       className="app-container"
@@ -135,6 +179,24 @@ function App() {
       <div className="bg-overlay" />
 
       <h1>Copa 2026</h1>
+
+      <div
+        className="menu-botoes"
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          gap: "10px",
+          zIndex: 1,
+          position: "relative",
+        }}
+      >
+        <button onClick={preencherAleatorio} className="btn-action">
+          Preencher Aleatório
+        </button>
+        <button onClick={reiniciar} className="btn-action">
+          Reiniciar
+        </button>
+      </div>
 
       <div className="bracket-container" ref={bracketRef}>
         <div className="column">

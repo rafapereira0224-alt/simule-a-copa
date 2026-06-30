@@ -1,13 +1,7 @@
-/* ================================
-   VARIÁVEIS GLOBAIS
-   ================================ */
 :root {
   --slot-h: 180px;
 }
 
-/* ================================
-   RESET E LAYOUT GERAL
-   ================================ */
 html, body, #root {
   min-height: 100%;
   margin: 0;
@@ -28,7 +22,7 @@ html, body, #root {
   overflow-x: hidden;
 }
 
-/* Overlay semitransparente sobre o fundo pra não atrapalhar a leitura */
+
 .bg-overlay {
   position: fixed;
   inset: 0;
@@ -37,7 +31,6 @@ html, body, #root {
   pointer-events: none;
 }
 
-/* Tudo acima do overlay */
 h1, .bracket-container {
   position: relative;
   z-index: 1;
@@ -53,9 +46,7 @@ h1 {
   text-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
 
-/* ================================
-   CONTAINER DO CHAVEAMENTO
-   ================================ */
+
 .bracket-container {
   display: flex;
   flex-direction: row;
@@ -68,15 +59,12 @@ h1 {
   transition: transform 0.2s ease;
 }
 
-/* ================================
-   COLUNAS
-   ================================ */
+
 .column {
   display: flex;
   flex-direction: column;
 }
 
-/* Primeira fase: cada match tem altura fixa = slot-h */
 .column:first-child .match,
 .column:last-child .match {
   height: var(--slot-h);
@@ -86,7 +74,7 @@ h1 {
   justify-content: center;
 }
 
-/* Oitavas: wrapper = 2 slots */
+
 .column:nth-child(2) .confronto-wrapper,
 .column:nth-child(8) .confronto-wrapper {
   height: calc(var(--slot-h) * 2);
@@ -95,7 +83,6 @@ h1 {
   justify-content: center;
 }
 
-/* Quartas: wrapper = 4 slots */
 .column:nth-child(3) .confronto-wrapper,
 .column:nth-child(7) .confronto-wrapper {
   height: calc(var(--slot-h) * 4);
@@ -104,7 +91,7 @@ h1 {
   justify-content: center;
 }
 
-/* Semi: wrapper = 8 slots */
+
 .column:nth-child(4) .confronto-wrapper,
 .column:nth-child(6) .confronto-wrapper {
   height: calc(var(--slot-h) * 8);
@@ -119,18 +106,13 @@ h1 {
   height: calc(var(--slot-h) * 8);
 }
 
-/* ================================
-   CAIXA INTERNA DO CONFRONTO
-   ================================ */
+
 .confronto-box {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-/* ================================
-   MATCH
-   ================================ */
 .match {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
@@ -146,9 +128,7 @@ h1 {
   gap: 4px;
 }
 
-/* ================================
-   PLACEHOLDER
-   ================================ */
+
 .placeholder {
   display: flex;
   align-items: center;
@@ -165,9 +145,7 @@ h1 {
   letter-spacing: 0.02em;
 }
 
-/* ================================
-   TIME (base)
-   ================================ */
+
 .team {
   padding: 6px 10px;
   border-radius: 20px;
@@ -199,9 +177,7 @@ h1 {
   flex-shrink: 0;
 }
 
-/* ================================
-   CAMPEÃO
-   ================================ */
+
 .champion-box {
   border: 2px solid #f59e0b;
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
@@ -211,84 +187,76 @@ h1 {
   margin-bottom: 8px;
 }
 
-/* ================================
-   CORES DOS TIMES (selected)
 
-   Cada país tem fundo (bg) e cor do texto/borda (c)
-   inspirados nas cores reais da bandeira/identidade.
-   ================================ */
-
-/* Brasil — verde e amarelo */
 .team-brasil.selected {
   background: linear-gradient(120deg, #dcfce7 60%, #fef9c3 100%);
   border-color: #16a34a;
   color: #14532d;
 }
 
-/* Alemanha — preto, vermelho, ouro */
+
 .team-alemanha.selected {
   background: linear-gradient(120deg, #f1f5f9 50%, #fef08a 100%);
   border-color: #dc2626;
   color: #1c1917;
 }
 
-/* Paraguai — vermelho e branco */
+
 .team-paraguai.selected {
   background: linear-gradient(120deg, #fee2e2 60%, #f0fdf4 100%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* França — azul, branco, vermelho */
+
 .team-franca.selected {
   background: linear-gradient(120deg, #dbeafe 50%, #fee2e2 100%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* Suécia — azul e amarelo */
+
 .team-suecia.selected {
   background: linear-gradient(120deg, #dbeafe 60%, #fef9c3 100%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* África do Sul — verde, amarelo, vermelho, preto */
+
 .team-africa_sul.selected {
   background: linear-gradient(120deg, #dcfce7 40%, #fef9c3 70%, #fee2e2 100%);
   border-color: #15803d;
   color: #14532d;
 }
 
-/* Canadá — vermelho e branco */
 .team-canada.selected {
   background: linear-gradient(120deg, #fee2e2 70%, #ffffff 100%);
   border-color: #dc2626;
   color: #7f1d1d;
 }
 
-/* Holanda — laranja */
+
 .team-holanda.selected {
   background: linear-gradient(120deg, #ffedd5 60%, #fed7aa 100%);
   border-color: #ea580c;
   color: #7c2d12;
 }
 
-/* Marrocos — vermelho e verde */
+
 .team-marrocos.selected {
   background: linear-gradient(120deg, #fee2e2 60%, #dcfce7 100%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* Portugal — verde e vermelho */
+
 .team-portugal.selected {
   background: linear-gradient(120deg, #dcfce7 40%, #fee2e2 100%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* Croácia — vermelho e branco (xadrez) */
+
 .team-croacia.selected {
   background: repeating-linear-gradient(
     135deg,
@@ -299,84 +267,79 @@ h1 {
   color: #7f1d1d;
 }
 
-/* Espanha — vermelho e amarelo */
+
 .team-espanha.selected {
   background: linear-gradient(120deg, #fee2e2 50%, #fef9c3 100%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* Áustria — vermelho e branco */
 .team-austria.selected {
   background: linear-gradient(180deg, #fee2e2 33%, #ffffff 33%, #ffffff 66%, #fee2e2 66%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* Estados Unidos — azul, vermelho, branco */
+
 .team-usa.selected {
   background: linear-gradient(120deg, #dbeafe 50%, #fee2e2 100%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* Bósnia — azul e amarelo */
 .team-bosnia.selected {
   background: linear-gradient(135deg, #dbeafe 60%, #fef9c3 100%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* Bélgica — preto, amarelo, vermelho */
 .team-belgica.selected {
   background: linear-gradient(120deg, #fef9c3 50%, #fee2e2 100%);
   border-color: #dc2626;
   color: #1c1917;
 }
 
-/* Senegal — verde, amarelo, vermelho */
 .team-senegal.selected {
   background: linear-gradient(120deg, #dcfce7 40%, #fef9c3 70%, #fee2e2 100%);
   border-color: #15803d;
   color: #14532d;
 }
 
-/* Japão — branco e vermelho */
+
 .team-japao.selected {
   background: radial-gradient(circle at 40% 50%, #fee2e2 30%, #f0fdf4 31%);
   border-color: #dc2626;
   color: #7f1d1d;
 }
 
-/* Costa do Marfim — laranja, branco, verde */
+
 .team-costa_marfim.selected {
   background: linear-gradient(90deg, #ffedd5 33%, #ffffff 33%, #ffffff 66%, #dcfce7 66%);
   border-color: #ea580c;
   color: #7c2d12;
 }
 
-/* Noruega — vermelho, branco e azul */
+
 .team-noruega.selected {
   background: linear-gradient(120deg, #fee2e2 60%, #dbeafe 100%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* México — verde, branco, vermelho */
 .team-mexico.selected {
   background: linear-gradient(90deg, #dcfce7 33%, #ffffff 33%, #ffffff 66%, #fee2e2 66%);
   border-color: #15803d;
   color: #14532d;
 }
 
-/* Equador — amarelo, azul, vermelho */
+
 .team-equador.selected {
   background: linear-gradient(180deg, #fef9c3 40%, #dbeafe 70%, #fee2e2 100%);
   border-color: #ca8a04;
   color: #713f12;
 }
 
-/* Inglaterra — branco e vermelho (Cruz de São Jorge) */
+
 .team-inglaterra.selected {
   background: linear-gradient(
     0deg,
@@ -386,42 +349,41 @@ h1 {
   color: #7f1d1d;
 }
 
-/* RD Congo — azul, vermelho, amarelo */
+
 .team-rd_congo.selected {
   background: linear-gradient(135deg, #dbeafe 50%, #fef9c3 100%);
   border-color: #dc2626;
   color: #1e3a8a;
 }
 
-/* Argentina — azul e branco */
+
 .team-argentina.selected {
   background: linear-gradient(180deg, #dbeafe 33%, #ffffff 33%, #ffffff 66%, #dbeafe 66%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* Cabo Verde — azul, branco, vermelho com estrelas */
+
 .team-cabo_verde.selected {
   background: linear-gradient(180deg, #dbeafe 50%, #fee2e2 100%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* Austrália — azul e ouro */
+
 .team-australia.selected {
   background: linear-gradient(120deg, #1e3a8a22 0%, #dbeafe 60%, #fef9c3 100%);
   border-color: #1d4ed8;
   color: #1e3a8a;
 }
 
-/* Egito — vermelho, branco e preto */
 .team-egito.selected {
   background: linear-gradient(180deg, #fee2e2 33%, #ffffff 33%, #ffffff 66%, #1c191711 66%);
   border-color: #b91c1c;
   color: #7f1d1d;
 }
 
-/* Suíça — vermelho e branco (Cruz Suíça) */
+
 .team-suica.selected {
   background: radial-gradient(
     circle at 50% 50%,
@@ -431,21 +393,21 @@ h1 {
   color: #7f1d1d;
 }
 
-/* Argélia — branco e verde */
+
 .team-argelia.selected {
   background: linear-gradient(90deg, #dcfce7 50%, #ffffff 50%);
   border-color: #15803d;
   color: #14532d;
 }
 
-/* Colômbia — amarelo, azul, vermelho */
+
 .team-colombia.selected {
   background: linear-gradient(180deg, #fef9c3 50%, #dbeafe 75%, #fee2e2 100%);
   border-color: #ca8a04;
   color: #713f12;
 }
 
-/* Gana — vermelho, ouro, verde + estrela */
+
 .team-gana.selected {
   background: linear-gradient(120deg, #fee2e2 33%, #fef9c3 66%, #dcfce7 100%);
   border-color: #ca8a04;
@@ -454,13 +416,13 @@ h1 {
 
 .champion-box {
   position: relative;
-  border: 3px solid #fbbf24; /* Borda mais grossa e dourada */
+  border: 3px solid #fbbf24; 
   background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
   border-radius: 16px;
   padding: 12px;
   text-align: center;
   margin-bottom: 20px;
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); /* Brilho externo */
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
   animation: pulse-gold 2s infinite ease-in-out;
 }
 
@@ -477,11 +439,25 @@ h1 {
   text-transform: uppercase;
 }
 
-/* Opcional: Aumentar o tamanho do time que ganha */
 .champion-box .team {
   background: white !important;
   border: none !important;
   font-size: 1.1rem;
   padding: 10px;
   justify-content: center;
+}
+
+.btn-action {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #f59e0b;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-action:hover {
+  background: #d97706;
+  transform: scale(1.05);
 }
