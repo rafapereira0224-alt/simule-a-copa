@@ -461,3 +461,41 @@ h1 {
   background: #d97706;
   transform: scale(1.05);
 }
+
+@media (max-width: 768px) {
+  :root {
+    --slot-h: 150px; 
+  }
+
+  .app-container {
+    padding: 16px 10px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .bracket-container {
+    padding: 10px 5px;
+    gap: 5px;
+    overflow-x: auto;
+    width: 100%;
+    align-items: center;
+  }
+
+  .match {
+    min-width: 140px; 
+    padding: 6px;
+  }
+
+  .team {
+    font-size: 0.75rem; 
+    gap: 4px;
+  }
+
+  .team img {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}

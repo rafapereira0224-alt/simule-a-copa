@@ -76,14 +76,24 @@ function App() {
     const ajustar = () => {
       const el = bracketRef.current;
       if (!el) return;
+
+     
+      if (window.innerWidth < 768) {
+        el.style.transform = "none";
+        el.style.marginBottom = "0px";
+        return;
+      }
+
       const margem = 80;
       const larguraTela = window.innerWidth - margem;
       const larguraReal = el.scrollWidth;
       const escala = larguraTela < larguraReal ? larguraTela / larguraReal : 1;
+
       el.style.transform = `scale(${escala})`;
       el.style.transformOrigin = "top center";
       el.style.marginBottom = `${(escala - 1) * el.scrollHeight}px`;
     };
+
     ajustar();
     window.addEventListener("resize", ajustar);
     return () => window.removeEventListener("resize", ajustar);
@@ -136,34 +146,56 @@ function App() {
   };
 
   const preencherAleatorio = () => {
-  let novosVencedores = {};
-  const escolher = (t1, t2) => (Math.random() > 0.5 ? t1 : t2);
+    let novosVencedores = {};
+    const escolher = (t1, t2) => (Math.random() > 0.5 ? t1 : t2);
 
-  // 1. Preencher 16-avos (Rodada inicial)
-  ladoEsquerdo.forEach((match, i) => novosVencedores[`left-16avos-${i}`] = escolher(match[0], match[1]));
-  ladoDireito.forEach((match, i) => novosVencedores[`right-16avos-${i}`] = escolher(match[0], match[1]));
+    ladoEsquerdo.forEach(
+      (match, i) =>
+        (novosVencedores[`left-16avos-${i}`] = escolher(match[0], match[1])),
+    );
+    ladoDireito.forEach(
+      (match, i) =>
+        (novosVencedores[`right-16avos-${i}`] = escolher(match[0], match[1])),
+    );
 
-  // 2. Preencher Oitavas (Baseado nos 16-avos)
-  for (let i = 0; i < 4; i++) {
-    novosVencedores[`left-oitavas-${i}`] = escolher(novosVencedores[`left-16avos-${i*2}`], novosVencedores[`left-16avos-${i*2+1}`]);
-    novosVencedores[`right-oitavas-${i}`] = escolher(novosVencedores[`right-16avos-${i*2}`], novosVencedores[`right-16avos-${i*2+1}`]);
-  }
+    for (let i = 0; i < 4; i++) {
+      novosVencedores[`left-oitavas-${i}`] = escolher(
+        novosVencedores[`left-16avos-${i * 2}`],
+        novosVencedores[`left-16avos-${i * 2 + 1}`],
+      );
+      novosVencedores[`right-oitavas-${i}`] = escolher(
+        novosVencedores[`right-16avos-${i * 2}`],
+        novosVencedores[`right-16avos-${i * 2 + 1}`],
+      );
+    }
 
-  // 3. Preencher Quartas (Baseado nas Oitavas)
-  for (let i = 0; i < 2; i++) {
-    novosVencedores[`left-quartas-${i}`] = escolher(novosVencedores[`left-oitavas-${i*2}`], novosVencedores[`left-oitavas-${i*2+1}`]);
-    novosVencedores[`right-quartas-${i}`] = escolher(novosVencedores[`right-oitavas-${i*2}`], novosVencedores[`right-oitavas-${i*2+1}`]);
-  }
+    for (let i = 0; i < 2; i++) {
+      novosVencedores[`left-quartas-${i}`] = escolher(
+        novosVencedores[`left-oitavas-${i * 2}`],
+        novosVencedores[`left-oitavas-${i * 2 + 1}`],
+      );
+      novosVencedores[`right-quartas-${i}`] = escolher(
+        novosVencedores[`right-oitavas-${i * 2}`],
+        novosVencedores[`right-oitavas-${i * 2 + 1}`],
+      );
+    }
 
-  // 4. Preencher Semi (Baseado nas Quartas)
-  novosVencedores[`left-semi-0`] = escolher(novosVencedores[`left-quartas-0`], novosVencedores[`left-quartas-1`]);
-  novosVencedores[`right-semi-0`] = escolher(novosVencedores[`right-quartas-0`], novosVencedores[`right-quartas-1`]);
+    novosVencedores[`left-semi-0`] = escolher(
+      novosVencedores[`left-quartas-0`],
+      novosVencedores[`left-quartas-1`],
+    );
+    novosVencedores[`right-semi-0`] = escolher(
+      novosVencedores[`right-quartas-0`],
+      novosVencedores[`right-quartas-1`],
+    );
 
-  // 5. Preencher Final
-  novosVencedores[`final-0`] = escolher(novosVencedores[`left-semi-0`], novosVencedores[`right-semi-0`]);
+    novosVencedores[`final-0`] = escolher(
+      novosVencedores[`left-semi-0`],
+      novosVencedores[`right-semi-0`],
+    );
 
-  setVencedores(novosVencedores);
-};
+    setVencedores(novosVencedores);
+  };
 
   return (
     <div
