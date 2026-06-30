@@ -1,16 +1,23 @@
-# React + Vite
+# Simulador da Copa do Mundo 2026 🏆
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é um projeto pessoal desenvolvido para simular o chaveamento da Copa do Mundo de 2026. Com ele, você pode acompanhar os confrontos, escolher os vencedores de cada fase e chegar até o grande campeão!
 
-Currently, two official plugins are available:
+## 🚀 Como acessar
+Você pode testar o simulador online através deste link:
+[https://rafapereira0224-alt.github.io/simula-o-copa/](https://rafapereira0224-alt.github.io/simula-o-copa/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Tecnologias Utilizadas
+Projeto desenvolvido com foco em React e Vite:
+* **React**: Biblioteca principal para a interface.
+* **Vite**: Ferramenta de build e desenvolvimento.
+* **GitHub Pages**: Hospedagem gratuita do projeto.
+* **LocalStorage**: Para salvar seu progresso automaticamente no navegador.
 
-## React Compiler
+## ✨ Funcionalidades
+* **Interface interativa**: Clique nos países para definir os vencedores de cada confronto.
+* **Preenchimento Automático**: Um botão para simular uma copa aleatória rapidamente.
+* **Persistência de Dados**: O sistema salva seu chaveamento, então você pode fechar e abrir o navegador sem perder suas escolhas.
+* **Botão Reiniciar**: Limpa todo o chaveamento para começar uma nova simulação.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+*Projeto desenvolvido para fins de estudo e prática de desenvolvimento front-end.*
