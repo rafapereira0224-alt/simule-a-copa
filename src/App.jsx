@@ -1,6 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./App.css";
 import copBg from "./assets/cop.webp";
+import confetti from "canvas-confetti";
+
+const THEME_STORAGE_KEY = "temaCopa";
+const BRACKET_STORAGE_KEY = "chaveamentoCopa";
 
 const mapaFlags = {
   Alemanha: "alemanha",
@@ -37,16 +41,6 @@ const mapaFlags = {
   Gana: "gana",
 };
 
-const RenderTeam = ({ team, isSelected, onClick }) => (
-  <div
-    className={`team ${isSelected ? "selected" : ""} team-${mapaFlags[team]}`}
-    onClick={onClick}
-  >
-    <img src={`${import.meta.env.BASE_URL}${mapaFlags[team]}.png`} alt={team} />
-    {team}
-  </div>
-);
-
 const ladoEsquerdo = [
   ["Alemanha", "Paraguai"],
   ["França", "Suécia"],
@@ -57,6 +51,7 @@ const ladoEsquerdo = [
   ["Estados Unidos", "Bósnia-Herzeg."],
   ["Bélgica", "Senegal"],
 ];
+
 const ladoDireito = [
   ["Brasil", "Japão"],
   ["Costa do Marfim", "Noruega"],
@@ -68,16 +63,89 @@ const ladoDireito = [
   ["Colômbia", "Gana"],
 ];
 
+
+const getInitialTheme = () => {
+  if (typeof window === "undefined") return "light";
+  const salvo = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (salvo === "light" || salvo === "dark") return salvo;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
+
+const RenderTeam = ({
+  team,
+  isSelected,
+  onClick,
+  fase,
+  index,
+  lado,
+  vencedores,
+}) => {
+  const isCaminho =
+    fase && index !== undefined && lado && vencedores
+      ? vencedores[`${lado}-${fase}-${index}`] === team
+      : false;
+
+  return (
+    <div
+      className={`team ${isSelected ? "selected" : ""} ${
+        isCaminho ? "brilho-caminho" : ""
+      } team-${mapaFlags[team]}`}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onClick?.();
+      }}
+    >
+      <img
+        src={`${import.meta.env.BASE_URL}${mapaFlags[team]}.png`}
+        alt={team}
+      />
+      {team}
+    </div>
+  );
+};
+
 function App() {
+  const [theme, setTheme] = useState(getInitialTheme);
   const [vencedores, setVencedores] = useState({});
   const bracketRef = useRef(null);
+
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  }, []);
+
+  useEffect(() => {
+    const salvo = localStorage.getItem(BRACKET_STORAGE_KEY);
+    if (salvo) {
+      try {
+        setVencedores(JSON.parse(salvo));
+      } catch {
+        localStorage.removeItem(BRACKET_STORAGE_KEY);
+      }
+    }
+  }, []);
+
+ 
+  useEffect(() => {
+    localStorage.setItem(BRACKET_STORAGE_KEY, JSON.stringify(vencedores));
+  }, [vencedores]);
+
 
   useEffect(() => {
     const ajustar = () => {
       const el = bracketRef.current;
       if (!el) return;
 
-     
       if (window.innerWidth < 768) {
         el.style.transform = "none";
         el.style.marginBottom = "0px";
@@ -99,64 +167,49 @@ function App() {
     return () => window.removeEventListener("resize", ajustar);
   }, []);
 
-  const handleSelect = (index, fase, lado, time) =>
-    setVencedores((prev) => ({ ...prev, [`${lado}-${fase}-${index}`]: time }));
+  const campeaoAnteriorRef = useRef(undefined);
 
-  const renderFase = (faseAtual, faseAnterior, numJogos, lado) => {
-    return [...Array(numJogos)].map((_, i) => {
-      const v1 = vencedores[`${lado}-${faseAnterior}-${i * 2}`];
-      const v2 = vencedores[`${lado}-${faseAnterior}-${i * 2 + 1}`];
-      return (
-        <div key={`${lado}-${faseAtual}-${i}`} className="confronto-wrapper">
-          <div className="confronto-box">
-            {v1 && v2 ? (
-              <div className="match">
-                <RenderTeam
-                  team={v1}
-                  isSelected={vencedores[`${lado}-${faseAtual}-${i}`] === v1}
-                  onClick={() => handleSelect(i, faseAtual, lado, v1)}
-                />
-                <RenderTeam
-                  team={v2}
-                  isSelected={vencedores[`${lado}-${faseAtual}-${i}`] === v2}
-                  onClick={() => handleSelect(i, faseAtual, lado, v2)}
-                />
-              </div>
-            ) : (
-              <div className="placeholder">Aguardando...</div>
-            )}
-          </div>
-        </div>
-      );
-    });
-  };
 
   useEffect(() => {
-    const salvo = localStorage.getItem("chaveamentoCopa");
-    if (salvo) setVencedores(JSON.parse(salvo));
+    const campeaoAtual = vencedores["final-0"];
+    const primeiraRenderizacao = campeaoAnteriorRef.current === undefined;
+    const mudou = campeaoAtual && campeaoAtual !== campeaoAnteriorRef.current;
+
+    campeaoAnteriorRef.current = campeaoAtual ?? null;
+
+    if (primeiraRenderizacao || !mudou) return;
+
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    const timeoutId = setTimeout(() => {
+      confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } });
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [vencedores["final-0"]]);
+
+  const handleSelect = useCallback(
+    (index, fase, lado, time) =>
+      setVencedores((prev) => ({
+        ...prev,
+        [`${lado}-${fase}-${index}`]: time,
+      })),
+    [],
+  );
+
+  const reiniciar = useCallback(() => {
+    setVencedores({});
+    localStorage.removeItem(BRACKET_STORAGE_KEY);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("chaveamentoCopa", JSON.stringify(vencedores));
-  }, [vencedores]);
-
-  const reiniciar = () => {
-    setVencedores({});
-    localStorage.removeItem("chaveamentoCopa");
-  };
-
-  const preencherAleatorio = () => {
-    let novosVencedores = {};
+  const preencherAleatorio = useCallback(() => {
     const escolher = (t1, t2) => (Math.random() > 0.5 ? t1 : t2);
+    const novosVencedores = {};
 
-    ladoEsquerdo.forEach(
-      (match, i) =>
-        (novosVencedores[`left-16avos-${i}`] = escolher(match[0], match[1])),
-    );
-    ladoDireito.forEach(
-      (match, i) =>
-        (novosVencedores[`right-16avos-${i}`] = escolher(match[0], match[1])),
-    );
+    ladoEsquerdo.forEach((match, i) => {
+      novosVencedores[`left-16avos-${i}`] = escolher(match[0], match[1]);
+    });
+    ladoDireito.forEach((match, i) => {
+      novosVencedores[`right-16avos-${i}`] = escolher(match[0], match[1]);
+    });
 
     for (let i = 0; i < 4; i++) {
       novosVencedores[`left-oitavas-${i}`] = escolher(
@@ -180,22 +233,60 @@ function App() {
       );
     }
 
-    novosVencedores[`left-semi-0`] = escolher(
-      novosVencedores[`left-quartas-0`],
-      novosVencedores[`left-quartas-1`],
+    novosVencedores["left-semi-0"] = escolher(
+      novosVencedores["left-quartas-0"],
+      novosVencedores["left-quartas-1"],
     );
-    novosVencedores[`right-semi-0`] = escolher(
-      novosVencedores[`right-quartas-0`],
-      novosVencedores[`right-quartas-1`],
+    novosVencedores["right-semi-0"] = escolher(
+      novosVencedores["right-quartas-0"],
+      novosVencedores["right-quartas-1"],
     );
 
-    novosVencedores[`final-0`] = escolher(
-      novosVencedores[`left-semi-0`],
-      novosVencedores[`right-semi-0`],
+    novosVencedores["final-0"] = escolher(
+      novosVencedores["left-semi-0"],
+      novosVencedores["right-semi-0"],
     );
 
     setVencedores(novosVencedores);
-  };
+  }, []);
+
+  const renderFase = (faseAtual, faseAnterior, numJogos, lado) =>
+    [...Array(numJogos)].map((_, i) => {
+      const v1 = vencedores[`${lado}-${faseAnterior}-${i * 2}`];
+      const v2 = vencedores[`${lado}-${faseAnterior}-${i * 2 + 1}`];
+      const vencedorAtual = vencedores[`${lado}-${faseAtual}-${i}`];
+
+      return (
+        <div key={`${lado}-${faseAtual}-${i}`} className="confronto-wrapper">
+          <div className="confronto-box">
+            {v1 && v2 ? (
+              <div className="match">
+                <RenderTeam
+                  team={v1}
+                  isSelected={vencedorAtual === v1}
+                  vencedores={vencedores}
+                  fase={faseAtual}
+                  index={i}
+                  lado={lado}
+                  onClick={() => handleSelect(i, faseAtual, lado, v1)}
+                />
+                <RenderTeam
+                  team={v2}
+                  isSelected={vencedorAtual === v2}
+                  vencedores={vencedores}
+                  fase={faseAtual}
+                  index={i}
+                  lado={lado}
+                  onClick={() => handleSelect(i, faseAtual, lado, v2)}
+                />
+              </div>
+            ) : (
+              <div className="placeholder">Aguardando...</div>
+            )}
+          </div>
+        </div>
+      );
+    });
 
   return (
     <div
@@ -220,6 +311,7 @@ function App() {
           gap: "10px",
           zIndex: 1,
           position: "relative",
+          justifyContent: "center",
         }}
       >
         <button onClick={preencherAleatorio} className="btn-action">
@@ -227,6 +319,13 @@ function App() {
         </button>
         <button onClick={reiniciar} className="btn-action">
           Reiniciar
+        </button>
+        <button
+          onClick={toggleTheme}
+          className="btn-action"
+          aria-label="Alternar tema claro/escuro"
+        >
+          {theme === "light" ? "🌙 Dark" : "☀️ Light"}
         </button>
       </div>
 
@@ -236,9 +335,13 @@ function App() {
             <div key={i} className="match">
               {match.map((team) => (
                 <RenderTeam
-                  key={team}
+                  key={`${team}-${i}`}
                   team={team}
                   isSelected={vencedores[`left-16avos-${i}`] === team}
+                  vencedores={vencedores}
+                  fase="16avos"
+                  index={i}
+                  lado="left"
                   onClick={() => handleSelect(i, "16avos", "left", team)}
                 />
               ))}
@@ -280,6 +383,10 @@ function App() {
                   isSelected={
                     vencedores["final-0"] === vencedores["left-semi-0"]
                   }
+                  vencedores={vencedores}
+                  fase="final"
+                  index={0}
+                  lado="final"
                   onClick={() =>
                     setVencedores((p) => ({
                       ...p,
@@ -292,6 +399,10 @@ function App() {
                   isSelected={
                     vencedores["final-0"] === vencedores["right-semi-0"]
                   }
+                  vencedores={vencedores}
+                  fase="final"
+                  index={0}
+                  lado="final"
                   onClick={() =>
                     setVencedores((p) => ({
                       ...p,
@@ -321,9 +432,13 @@ function App() {
             <div key={i} className="match">
               {match.map((team) => (
                 <RenderTeam
-                  key={team}
+                  key={`${team}-${i}`}
                   team={team}
                   isSelected={vencedores[`right-16avos-${i}`] === team}
+                  vencedores={vencedores}
+                  fase="16avos"
+                  index={i}
+                  lado="right"
                   onClick={() => handleSelect(i, "16avos", "right", team)}
                 />
               ))}
