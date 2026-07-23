@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./App.css";
 import copBg from "./assets/cop.webp";
 import confetti from "canvas-confetti";
+import vitoriaAudio from "./assets/vitoria.mp3";
 
 const THEME_STORAGE_KEY = "temaCopa";
 const BRACKET_STORAGE_KEY = "chaveamentoCopa";
@@ -63,7 +64,6 @@ const ladoDireito = [
   ["Colômbia", "Gana"],
 ];
 
-
 const getInitialTheme = () => {
   if (typeof window === "undefined") return "light";
   const salvo = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -72,7 +72,6 @@ const getInitialTheme = () => {
     ? "dark"
     : "light";
 };
-
 
 const RenderTeam = ({
   team,
@@ -114,7 +113,6 @@ function App() {
   const [vencedores, setVencedores] = useState({});
   const bracketRef = useRef(null);
 
-
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_STORAGE_KEY, theme);
@@ -135,11 +133,9 @@ function App() {
     }
   }, []);
 
- 
   useEffect(() => {
     localStorage.setItem(BRACKET_STORAGE_KEY, JSON.stringify(vencedores));
   }, [vencedores]);
-
 
   useEffect(() => {
     const ajustar = () => {
@@ -169,7 +165,6 @@ function App() {
 
   const campeaoAnteriorRef = useRef(undefined);
 
-
   useEffect(() => {
     const campeaoAtual = vencedores["final-0"];
     const primeiraRenderizacao = campeaoAnteriorRef.current === undefined;
@@ -178,6 +173,12 @@ function App() {
     campeaoAnteriorRef.current = campeaoAtual ?? null;
 
     if (primeiraRenderizacao || !mudou) return;
+
+    const audio = new Audio(vitoriaAudio);
+    audio.volume = 0.6;
+    audio
+      .play()
+      .catch((err) => console.log("Áudio bloqueado pelo navegador:", err));
 
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
     const timeoutId = setTimeout(() => {
